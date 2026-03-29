@@ -20,6 +20,7 @@ import { toast } from "sonner";
 
 interface FormData {
   nome: string;
+  email: string;
   telefone: string;
   endereco: string;
   descricao: string;
@@ -35,6 +36,7 @@ const AUTH_TOKEN = "jhegfiegwiufhniejnfiuewnbfiuvenwiufniwunfejwnfiuwhe";
 export default function App() {
   const [formData, setFormData] = useState<FormData>({
     nome: '',
+    email: '',
     telefone: '',
     endereco: '',
     descricao: '',
@@ -82,10 +84,7 @@ export default function App() {
     return `55${digits}@s.whatsapp.net`;
   };
 
-  const formatEmail = (nome: string) => {
-    const cleanName = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '');
-    return `${cleanName}@gmail.com`;
-  };
+
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nome = e.target.value;
@@ -113,13 +112,12 @@ export default function App() {
     }
 
     const numero = formatNumero(formData.telefone);
-    const email = formatEmail(formData.nome);
 
     const payload = {
       numero: numero,
       dados: {
         nome: formData.nome,
-        email: email,
+        email: formData.email,
         endereco: formData.endereco,
         latitude: formData.latitude,
         longitude: formData.longitude,
@@ -175,6 +173,7 @@ export default function App() {
         toast.success("Estabelecimento cadastrado com sucesso!");
         setFormData({
           nome: '',
+          email: '',
           telefone: '',
           endereco: '',
           descricao: '',
@@ -201,9 +200,7 @@ export default function App() {
       
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="p-3 bg-primary/10 rounded-full mb-2">
-            <Store className="w-6 h-6 text-primary" />
-          </div>
+          <img src="/logo.jpg" alt="Rapidus Express" className="w-24 h-24 rounded-full object-cover mb-2 shadow-md" />
           <h1 className="text-2xl font-semibold tracking-tight">Rapidus</h1>
           <p className="text-sm text-muted-foreground">
             Cadastro de Estabelecimento Parceiro
@@ -232,30 +229,28 @@ export default function App() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="senha">Senha de Acesso</Label>
-                  <Input 
-                    id="senha"
-                    required
-                    type="text"
-                    placeholder="Ex: 123456"
-                    value={formData.senha}
-                    onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input 
+                  id="email"
+                  required
+                  type="email"
+                  placeholder="Ex: contato@estabelecimento.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="externalId">External ID</Label>
-                  <Input 
-                    id="externalId"
-                    required
-                    readOnly
-                    className="bg-muted text-muted-foreground"
-                    placeholder="Gerado automaticamente"
-                    value={formData.externalId}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="senha">Senha de Acesso</Label>
+                <Input 
+                  id="senha"
+                  required
+                  type="text"
+                  placeholder="Ex: 123456"
+                  value={formData.senha}
+                  onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                />
               </div>
 
               <div className="space-y-2">
@@ -333,9 +328,12 @@ export default function App() {
           </form>
         </Card>
 
-        <div className="text-center">
+        <div className="text-center space-y-1">
           <p className="text-xs text-muted-foreground">
             Rapidus &copy; 2026
+          </p>
+          <p className="text-xs text-muted-foreground/60">
+            Powered by <span className="font-semibold">Intelflux</span>
           </p>
         </div>
       </div>
