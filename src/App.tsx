@@ -326,7 +326,7 @@ export default function App() {
                   id="telefone"
                   required
                   type="tel"
-                  placeholder="(99) 99137-2552"
+                  placeholder="(99) 99136-7621"
                   value={formData.telefone}
                   onChange={handlePhoneChange}
                 />
