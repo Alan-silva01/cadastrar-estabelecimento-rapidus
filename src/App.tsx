@@ -25,10 +25,12 @@ interface FormData {
   descricao: string;
   latitude: string;
   longitude: string;
+  senha?: string;
+  externalId?: string;
 }
 
 const WEBHOOK_URL = "https://rapidus-n8n-webhook.b7bsm5.easypanel.host/webhook/cadastrar_clientes";
-const AUTH_TOKEN = "Oenru4qmHnqk8QqKLy4G60U545P3Kpg3LX34lWpV5KZC009t8LsECVMl8wZt";
+const AUTH_TOKEN = "jhegfiegwiufhniejnfiuewnbfiuvenwiufniwunfejwnfiuwhe";
 
 export default function App() {
   const [formData, setFormData] = useState<FormData>({
@@ -38,6 +40,8 @@ export default function App() {
     descricao: '',
     latitude: '',
     longitude: '',
+    senha: '',
+    externalId: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -83,6 +87,21 @@ export default function App() {
     return `${cleanName}@gmail.com`;
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nome = e.target.value;
+    const firstWord = nome.split(' ')[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+    
+    setFormData(prev => {
+      // Keep existing numbers or generate new 5-digit random number
+      const existingNumbers = prev.externalId?.match(/\d+$/)?.[0] || Math.floor(10000 + Math.random() * 90000).toString();
+      return {
+        ...prev,
+        nome,
+        externalId: firstWord ? `${firstWord}${existingNumbers}` : ''
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -106,6 +125,8 @@ export default function App() {
         longitude: formData.longitude,
         telefone: formData.telefone,
         descricao: formData.descricao,
+        senha: formData.senha,
+        externalId: formData.externalId,
       },
       created_at: new Date().toISOString(),
       entregas: null
@@ -131,9 +152,24 @@ export default function App() {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const responseText = await response.text();
       
-      const isSuccess = result === true || result?.resposta === true || result?.success === true;
+      if (!response.ok) {
+        throw new Error(responseText || `Erro no servidor: ${response.status}`);
+      }
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        result = responseText;
+      }
+      
+      const isSuccess = 
+        result === true || 
+        result?.resposta === true || 
+        result?.success === true || 
+        (typeof result === 'string' && result.toLowerCase() === 'true');
 
       if (isSuccess) {
         toast.success("Estabelecimento cadastrado com sucesso!");
@@ -144,6 +180,8 @@ export default function App() {
           descricao: '',
           latitude: formData.latitude,
           longitude: formData.longitude,
+          senha: '',
+          externalId: '',
         });
       } else {
         throw new Error("O servidor recusou o cadastro.");
@@ -190,8 +228,34 @@ export default function App() {
                   required
                   placeholder="Ex: Açaitropical"
                   value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                  onChange={handleNameChange}
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="senha">Senha de Acesso</Label>
+                  <Input 
+                    id="senha"
+                    required
+                    type="text"
+                    placeholder="Ex: 123456"
+                    value={formData.senha}
+                    onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="externalId">External ID</Label>
+                  <Input 
+                    id="externalId"
+                    required
+                    readOnly
+                    className="bg-muted text-muted-foreground"
+                    placeholder="Gerado automaticamente"
+                    value={formData.externalId}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
