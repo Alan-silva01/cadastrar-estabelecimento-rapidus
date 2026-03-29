@@ -84,6 +84,17 @@ export default function App() {
     return `55${digits}@s.whatsapp.net`;
   };
 
+  const formatPhoneMask = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = formatPhoneMask(e.target.value);
+    setFormData({ ...formData, telefone: masked });
+  };
 
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,7 +234,7 @@ export default function App() {
                 <Input 
                   id="nome"
                   required
-                  placeholder="Ex: Açaitropical"
+                  placeholder="Açaitropical"
                   value={formData.nome}
                   onChange={handleNameChange}
                 />
@@ -235,7 +246,7 @@ export default function App() {
                   id="email"
                   required
                   type="email"
-                  placeholder="Ex: contato@estabelecimento.com"
+                  placeholder="contato@estabelecimento.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -247,7 +258,7 @@ export default function App() {
                   id="senha"
                   required
                   type="text"
-                  placeholder="Ex: 123456"
+                  placeholder="123456"
                   value={formData.senha}
                   onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
                 />
@@ -259,13 +270,10 @@ export default function App() {
                   id="telefone"
                   required
                   type="tel"
-                  placeholder="Ex: 99 99137-2552"
+                  placeholder="(99) 99137-2552"
                   value={formData.telefone}
-                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                  onChange={handlePhoneChange}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Apenas números. Ex: 99991372552
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -273,7 +281,7 @@ export default function App() {
                 <Input 
                   id="descricao"
                   required
-                  placeholder="Ex: Açaiteria, Pizzaria, Açougue"
+                  placeholder="Açaiteria, Pizzaria, Açougue"
                   value={formData.descricao}
                   onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                 />
@@ -284,7 +292,7 @@ export default function App() {
                 <Textarea 
                   id="endereco"
                   required
-                  placeholder="Rua, Número, Bairro, Cidade-UF, CEP"
+                  placeholder="Rua, Nº, Bairro, Cidade-UF"
                   className="resize-none"
                   value={formData.endereco}
                   onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
