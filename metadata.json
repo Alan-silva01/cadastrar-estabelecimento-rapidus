@@ -1,0 +1,5 @@
+{
+  "name": "Rapidus - Cadastro de Estabelecimento",
+  "description": "Formulário premium para cadastro de novos estabelecimentos parceiros.",
+  "requestFramePermissions": ["geolocation"]
+}
