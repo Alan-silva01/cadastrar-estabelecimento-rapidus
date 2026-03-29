@@ -178,7 +178,9 @@ export default function App() {
         result === true || 
         result?.resposta === true || 
         result?.success === true || 
-        (typeof result === 'string' && result.toLowerCase() === 'true');
+        (typeof result === 'string' && result.toLowerCase() === 'true') ||
+        (Array.isArray(result) && result.length > 0) ||
+        (result && typeof result === 'object' && result.id);
 
       if (isSuccess) {
         toast.success("Estabelecimento cadastrado com sucesso!");
