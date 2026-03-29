@@ -6,8 +6,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   MapPin, 
-  Store, 
   Loader2,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,9 @@ export default function App() {
     externalId: '',
   });
 
+  const [confirmSenha, setConfirmSenha] = useState('');
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmSenha, setShowConfirmSenha] = useState(false);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
 
@@ -118,6 +122,18 @@ export default function App() {
 
     if (!formData.latitude || !formData.longitude) {
       toast.error("Por favor, capture a localização antes de enviar.");
+      setLoading(false);
+      return;
+    }
+
+    if ((formData.senha || '').length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres.");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.senha !== confirmSenha) {
+      toast.error("As senhas não coincidem.");
       setLoading(false);
       return;
     }
@@ -195,6 +211,8 @@ export default function App() {
           senha: '',
           externalId: '',
         });
+        setConfirmSenha('');
+
       } else {
         throw new Error("O servidor recusou o cadastro.");
       }
@@ -236,7 +254,7 @@ export default function App() {
                 <Input 
                   id="nome"
                   required
-                  placeholder="Açaitropical"
+                  placeholder="Rapidus Express"
                   value={formData.nome}
                   onChange={handleNameChange}
                 />
@@ -248,7 +266,7 @@ export default function App() {
                   id="email"
                   required
                   type="email"
-                  placeholder="contato@estabelecimento.com"
+                  placeholder="seuemail@gmail.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -256,14 +274,50 @@ export default function App() {
 
               <div className="space-y-2">
                 <Label htmlFor="senha">Senha de Acesso</Label>
-                <Input 
-                  id="senha"
-                  required
-                  type="text"
-                  placeholder="123456"
-                  value={formData.senha}
-                  onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                />
+                <div className="relative">
+                  <Input 
+                    id="senha"
+                    required
+                    type={showSenha ? 'text' : 'password'}
+                    placeholder="Mínimo 6 caracteres"
+                    minLength={6}
+                    value={formData.senha}
+                    onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setShowSenha(!showSenha)}
+                    tabIndex={-1}
+                  >
+                    {showSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmSenha">Confirmar Senha</Label>
+                <div className="relative">
+                  <Input 
+                    id="confirmSenha"
+                    required
+                    type={showConfirmSenha ? 'text' : 'password'}
+                    placeholder="Repita a senha"
+                    minLength={6}
+                    value={confirmSenha}
+                    onChange={(e) => setConfirmSenha(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setShowConfirmSenha(!showConfirmSenha)}
+                    tabIndex={-1}
+                  >
+                    {showConfirmSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
